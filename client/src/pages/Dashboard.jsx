@@ -31,6 +31,7 @@ const Dashboard = () => {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({ documents: 0, chats: 0 });
 
   const fetchDashboardData = async () => {
@@ -39,12 +40,19 @@ const Dashboard = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setProjects(res.data);
       
-      const docCount = res.data.reduce((acc, p) => acc + (p._count?.documents || 0), 0);
-      setStats({ documents: docCount, chats: 0 }); // Chats count can be added if backend supports
+      if (Array.isArray(res.data)) {
+        setProjects(res.data);
+        const docCount = res.data.reduce((acc, p) => acc + (p._count?.documents || 0), 0);
+        setStats({ documents: docCount, chats: 0 });
+        setError(null);
+      } else {
+        console.error('Unexpected Dashboard Data:', res.data);
+        setError('Connection established, but neural archives are unreachable.');
+      }
     } catch (err) {
       console.error('Dashboard Fetch Error:', err);
+      setError('Neural Hub Offline. Please verify your Database Connection.');
     } finally {
       setLoading(false);
     }
@@ -53,6 +61,21 @@ const Dashboard = () => {
   useEffect(() => {
     if (userLoaded && user) fetchDashboardData();
   }, [userLoaded, user]);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+        <div className="w-16 h-16 rounded-2xl bg-saas-accent/10 flex items-center justify-center text-saas-accent">
+           <Zap size={32} />
+        </div>
+        <div className="space-y-2">
+           <h3 className="text-xl font-bold text-saas-text uppercase tracking-tighter">Connection Interrupted</h3>
+           <p className="text-sm text-saas-text-muted max-w-sm">{error}</p>
+        </div>
+        <button onClick={fetchDashboardData} className="saas-button-primary px-8">Attempt Re-Sync</button>
+      </div>
+    );
+  }
 
   if (loading || !userLoaded) {
     return (

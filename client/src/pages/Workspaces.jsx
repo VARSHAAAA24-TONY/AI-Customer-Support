@@ -39,9 +39,16 @@ const Workspaces = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setProjects(res.data);
+      
+      if (Array.isArray(res.data)) {
+        setProjects(res.data);
+      } else {
+        console.error('Unexpected Projects Data:', res.data);
+        toast.error('Neural Hubs could not be indexed.');
+      }
     } catch (err) {
       console.error(err);
+      toast.error('Connection Interrupted.');
     } finally {
       setLoading(false);
     }

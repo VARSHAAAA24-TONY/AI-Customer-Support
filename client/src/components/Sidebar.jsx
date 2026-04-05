@@ -40,7 +40,11 @@ const Sidebar = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setWorkspaces(res.data);
+      if (Array.isArray(res.data)) {
+        setWorkspaces(res.data);
+      } else {
+        console.error('Sidebar Data Mismatch:', res.data);
+      }
     } catch (err) {
       console.error('Sidebar Workspace Fetch Error:', err);
     } finally {

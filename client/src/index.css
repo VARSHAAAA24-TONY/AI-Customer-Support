@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --color-saas-bg: var(--saas-bg);
+  --color-saas-surface: var(--saas-surface);
+  --color-saas-border: var(--saas-border);
+  --color-saas-accent: var(--saas-accent);
+  --color-saas-primary: var(--saas-primary);
+  --color-saas-secondary: var(--saas-secondary);
+  --color-saas-text: var(--saas-text);
+  --color-saas-text-muted: var(--saas-text-muted);
+
+  /* Custom Animations in v4 */
+  --animate-fade-in: fadeIn 0.5s ease-out forwards;
+  --animate-slide-up: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-shimmer: shimmer 2s infinite;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+}
+
+:root {
+  --saas-bg: #0D0D0D;
+  --saas-surface: #1A1A1A;
+  --saas-border: #262626;
+  --saas-accent: #C2A878;
+  --saas-primary: #C2A878;
+  --saas-secondary: #A58B5E;
+  --saas-text: #EAEAEA;
+  --saas-text-muted: #A3A3A3;
+}
+
+[data-theme='aurora'] {
+  --saas-bg: #0F172A;
+  --saas-surface: #1E293B;
+  --saas-border: #334155;
+  --saas-accent: #818CF8;
+  --saas-primary: #818CF8;
+  --saas-secondary: #6366F1;
+  --saas-text: #F8FAFC;
+  --saas-text-muted: #94A3B8;
+}
+
+@layer base {
+  body {
+    @apply bg-saas-bg text-saas-text font-sans selection:bg-saas-accent/20 selection:text-saas-accent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Minimalist Card System */
+  .saas-card {
+    @apply bg-saas-surface border border-saas-border rounded-xl transition-all duration-300;
+  }
+  
+  .saas-card-hover {
+    @apply hover:border-saas-accent/30 hover:shadow-[0_8px_48px_-12px_rgba(0,0,0,0.8)] hover:bg-saas-surface/80;
+  }
+
+  /* Premium Minimalist Buttons (Notion/Linear Style) */
+  .saas-button-primary {
+    @apply bg-saas-accent text-saas-bg font-bold py-2.5 px-6 rounded-xl transition-all duration-200 
+           hover:bg-saas-secondary hover:translate-y-[-1px] active:translate-y-[0]
+           flex items-center justify-center gap-2 text-sm tracking-tight;
+  }
+
+  .saas-button-secondary {
+    @apply bg-saas-surface border border-saas-border text-saas-text font-bold py-2.5 px-6 rounded-xl transition-all duration-200 
+           hover:border-saas-accent/30 hover:bg-saas-bg flex items-center justify-center gap-2 text-sm tracking-tight;
+  }
+
+  .saas-button-ghost {
+    @apply text-saas-text-muted hover:text-saas-text hover:bg-saas-surface/50 py-2 px-4 rounded-xl transition-all duration-200 
+           flex items-center gap-3 text-xs font-black uppercase tracking-widest;
+  }
+
+  /* Clean Input System */
+  .saas-input {
+    @apply bg-saas-bg border border-saas-border text-saas-text text-sm rounded-xl py-3 px-4 outline-none transition-all duration-200
+           focus:border-saas-accent focus:ring-1 focus:ring-saas-accent/20 placeholder:text-saas-text-muted/50;
+  }
+
+  /* Typography & Dividers */
+  .text-gradient {
+    @apply bg-gradient-to-tr from-saas-accent to-[#E0D4B0] bg-clip-text text-transparent;
+  }
+
+  .saas-divider {
+    @apply h-px w-full bg-saas-border/50 my-6;
+  }
+
+  /* Custom Loading States */
+  .saas-skeleton {
+    @apply bg-saas-surface relative overflow-hidden rounded-xl;
+  }
+  
+  .saas-skeleton::after {
+    @apply absolute inset-0 content-[''] translate-x-[-100%] bg-gradient-to-r 
+           from-transparent via-white/5 to-transparent animate-shimmer;
+  }
+
+  /* Standard Page Transition */
+  .page-transition {
+    @apply animate-fade-in;
+  }
+}
+
+/* Custom Scrollbar (Stealthy) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-saas-border rounded-full hover:bg-saas-accent/20;
+}
+
+/* No-Scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

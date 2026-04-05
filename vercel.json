@@ -16,13 +16,19 @@
       }
     }
   ],
+  "cleanUrls": true,
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "server/src/index.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/assets/(.*)",
+      "dest": "client/assets/$1",
+      "check": true
+    },
+    {
+      "src": "/((?!api/).*)",
       "dest": "client/$1",
       "check": true
     },

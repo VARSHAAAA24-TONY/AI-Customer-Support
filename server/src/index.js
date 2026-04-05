@@ -12,7 +12,7 @@ const { getChatStream: getOpenAIStream } = require('./services/openai.service');
 const app = express();
 const prisma = new PrismaClient();
 const { Pool } = require('pg');
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: process.env.NODE_ENV === 'production' ? '/tmp/' : 'uploads/' });
 
 // Neural Direct-Connect Core
 const pool = new Pool({
@@ -560,25 +560,22 @@ app.get('/api/admin/projects', authMiddleware, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
-  
-  // Warm up the embedding model to prevent first-run timeouts
-  try {
-    const { getEmbedding } = require('./services/embeddings.service');
-    console.log('[Init] Warming up Neural Embedding Engine...');
-    await getEmbedding('NexuAI Warmup Signature');
-    console.log('[Init] Neural Engine Ready.');
-  } catch (err) {
-    console.warn('[Init] Neural Model warm-up delayed:', err.message);
-  }
-});
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, async () => {
+    console.log(`Server running locally on port ${PORT}`);
+    
+    // Warm up the embedding model to prevent first-run timeouts
+    try {
+      const { getEmbedding } = require('./services/embeddings.service');
+      console.log('[Init] Warming up Neural Embedding Engine...');
+      await getEmbedding('NexuAI Warmup Signature');
+      console.log('[Init] Neural Engine Ready.');
+    } catch (err) {
+      console.warn('[Init] Neural Model warm-up delayed:', err.message);
+    }
+  });
+}
 
 // Export for Vercel Serverless
 module.exports = app;
-
-// Keep process alive in specialized environments
-if (process.env.NODE_ENV !== 'production') {
-  setInterval(() => {}, 1000 * 60 * 60);
-}

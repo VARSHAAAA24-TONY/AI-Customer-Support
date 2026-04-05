@@ -1,0 +1,12 @@
+{
+  "name": "ai-customer-support-agent",
+  "version": "1.0.0",
+  "description": "Root orchestrator for AI Customer Support Agent",
+  "scripts": {
+    "postinstall": "cd client && npm install && cd ../server && npm install && npx prisma generate",
+    "build": "cd client && npm run build"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.2"
+  }
+}

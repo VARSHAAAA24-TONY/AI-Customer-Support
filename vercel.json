@@ -4,19 +4,14 @@
     {
       "src": "server/src/index.js",
       "use": "@vercel/node",
-      "config": {
-        "nodeVersion": "20.x"
-      }
+      "config": { "nodeVersion": "20.x" }
     },
     {
       "src": "client/package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     }
   ],
-  "cleanUrls": true,
   "routes": [
     {
       "src": "/api/(.*)",

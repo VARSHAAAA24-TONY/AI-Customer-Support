@@ -1,14 +1,14 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
-import { Search, Bell, HelpCircle, Command } from 'lucide-react';
+import { Search, Bell, HelpCircle, Command, Menu } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 /**
  * Premium SaaS Navbar for NexuAI.
  * Features: Dynamic Title, Centered Search, Glassmorphism.
  */
-const Navbar = () => {
+const Navbar = ({ onMenuClick }) => {
   const { user } = useUser();
   const location = useLocation();
 
@@ -26,17 +26,26 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 h-20 bg-saas-bg/80 backdrop-blur-md border-b border-saas-border z-40 flex items-center justify-between px-8 transition-all">
-      {/* Left: Dynamic Title */}
-      <motion.div 
-        key={location.pathname}
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col"
-      >
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-saas-primary/70">Intelligence Overview</p>
-        <h2 className="text-xl font-black text-saas-text tracking-tight">{getPageTitle()}</h2>
-      </motion.div>
+    <header className="sticky top-0 h-20 bg-saas-bg/80 backdrop-blur-md border-b border-saas-border z-40 flex items-center justify-between px-6 sm:px-8 transition-all">
+      {/* Left: Hamburger & Dynamic Title */}
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={onMenuClick}
+          className="lg:hidden p-2 text-saas-text-muted hover:text-saas-text hover:bg-saas-surface rounded-lg transition-all"
+        >
+          <Menu size={20} />
+        </button>
+        
+        <motion.div 
+          key={location.pathname}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex flex-col"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-saas-accent/70">Intelligence Overview</p>
+          <h2 className="text-lg sm:text-xl font-black text-saas-text tracking-tight truncate max-w-[150px] sm:max-w-none">{getPageTitle()}</h2>
+        </motion.div>
+      </div>
 
       {/* Center: Search Bar */}
       <div className="hidden md:flex flex-1 max-w-md mx-8 relative group">

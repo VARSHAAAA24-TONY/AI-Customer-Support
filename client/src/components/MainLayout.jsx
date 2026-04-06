@@ -17,6 +17,10 @@ const MainLayout = ({ children }) => {
   const location = useLocation();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
   const [currentTheme, setCurrentTheme] = React.useState(localStorage.getItem('saas-theme') || 'gold');
+  
+  // Sidebar State (Global for this layout)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   // 1. Keyboard Listener for Command Palette
   React.useEffect(() => {
@@ -66,12 +70,24 @@ const MainLayout = ({ children }) => {
           </motion.div>
         ) : (
           <div className="flex w-full min-h-screen relative overflow-hidden">
-            <Sidebar />
+            <Sidebar 
+              isCollapsed={isSidebarCollapsed} 
+              setIsCollapsed={setIsSidebarCollapsed}
+              isOpen={isSidebarOpen}
+              setIsOpen={setIsSidebarOpen}
+            />
 
-            <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 ml-[80px] lg:ml-[260px]">
-              <Navbar title={pageHeading} />
+            <div 
+              className={`flex-1 flex flex-col min-w-0 transition-all duration-300 
+                ${isSidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[260px]'}
+                ml-0`}
+            >
+              <Navbar 
+                title={pageHeading} 
+                onMenuClick={() => setIsSidebarOpen(true)}
+              />
 
-              <main className="flex-1 px-8 lg:px-12 py-10 pb-24 overflow-y-auto no-scrollbar">
+              <main className="flex-1 px-4 sm:px-8 lg:px-12 py-10 pb-24 overflow-y-auto no-scrollbar">
                 
                 {/* 1. Universal Page Heading (Clean Minimalism) */}
                 <header className="mb-12 page-transition">

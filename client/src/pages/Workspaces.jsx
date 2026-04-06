@@ -152,7 +152,7 @@ const Workspaces = () => {
                </tr>
             </thead>
             <tbody className="divide-y divide-saas-border/30">
-               {projects.map(p => (
+               {Array.isArray(projects) && projects.map(p => (
                  <tr key={p.id} className="group hover:bg-saas-surface/20 transition-colors cursor-pointer" onClick={() => navigate(`/projects/${p.id}`)}>
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-4">
@@ -184,7 +184,7 @@ const Workspaces = () => {
                     </td>
                  </tr>
                ))}
-               {!loading && projects.length === 0 && (
+               {!loading && (!Array.isArray(projects) || projects.length === 0) && (
                  <tr>
                     <td colSpan="4" className="py-24 text-center">
                        <div className="flex flex-col items-center opacity-30 grayscale">

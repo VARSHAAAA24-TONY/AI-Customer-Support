@@ -41,8 +41,13 @@ const AIChat = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setWorkspaces(res.data);
-      if (res.data.length > 0) setSelectedWorkspace(res.data[0]);
+      if (Array.isArray(res.data)) {
+        setWorkspaces(res.data);
+        if (res.data.length > 0) setSelectedWorkspace(res.data[0]);
+      } else {
+        console.error('Unexpected Workspaces Data:', res.data);
+        setWorkspaces([]);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -149,7 +154,7 @@ const AIChat = () => {
               onChange={(e) => setSelectedWorkspace(workspaces.find(w => w.id === e.target.value))}
               className="appearance-none bg-saas-surface border border-saas-border text-saas-text text-xs font-black uppercase tracking-widest py-3 pl-6 pr-12 rounded-xl focus:border-saas-accent/50 outline-none cursor-pointer hover:bg-saas-bg transition-all"
             >
-               {workspaces.map(w => (
+               {Array.isArray(workspaces) && workspaces.map(w => (
                  <option key={w.id} value={w.id}>{w.name}</option>
                ))}
             </select>
@@ -166,7 +171,7 @@ const AIChat = () => {
                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Awaiting Instruction for {selectedWorkspace?.name}</p>
                </div>
             )}
-            {messages.map((msg, i) => (
+            {Array.isArray(messages) && messages.map((msg, i) => (
               <motion.div 
                key={i}
                initial={{ opacity: 0, y: 10 }}
@@ -178,7 +183,7 @@ const AIChat = () => {
                       ? 'bg-saas-surface text-saas-text border border-saas-accent/30 rounded-tr-none' 
                       : 'bg-saas-surface/40 text-saas-text border border-saas-border rounded-tl-none'}`}>
                      <div className="text-sm font-medium leading-[1.8] whitespace-pre-wrap">{msg.content}</div>
-                     {msg.sources?.length > 0 && (
+                     {Array.isArray(msg.sources) && msg.sources.length > 0 && (
                        <div className="pt-5 border-t border-saas-border/30">
                           <p className="text-[9px] font-black uppercase tracking-[0.4em] text-saas-accent mb-3 flex items-center gap-2">
                              <Zap size={10} /> Grounding Baseline

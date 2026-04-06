@@ -48,7 +48,9 @@ const Dashboard = () => {
         setError(null);
       } else {
         console.error('Unexpected Dashboard Data:', res.data);
-        setError('Connection established, but neural archives are unreachable.');
+        setProjects([]);
+        setStats({ documents: 0, chats: 0 });
+        setError('Neural Sync Incomplete: Dashboard received invalid data format.');
       }
     } catch (err) {
       console.error('Dashboard Fetch Error:', err);

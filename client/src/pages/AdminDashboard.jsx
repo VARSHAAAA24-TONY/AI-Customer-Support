@@ -41,8 +41,8 @@ const AdminDashboard = () => {
         axios.get(`${API_BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE_URL}/api/admin/projects`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
-      setUsers(uRes.data);
-      setProjects(pRes.data);
+      setUsers(Array.isArray(uRes.data) ? uRes.data : []);
+      setProjects(Array.isArray(pRes.data) ? pRes.data : []);
     } catch (err) {
       console.error('Admin Fetch Error:', err);
       toast.error('Identity Mismatch: Forbidden Access');
@@ -110,9 +110,9 @@ const AdminDashboard = () => {
       {/* 2. Global Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
          {[
-           { label: 'Total Artisans', value: users.length, icon: <Users size={18} /> },
-           { label: 'Active Hubs', value: projects.length, icon: <Database size={18} /> },
-           { label: 'Grounded Files', value: projects.reduce((acc, p) => acc + (p._count?.documents || 0), 0), icon: <Activity size={18} /> },
+           { label: 'Total Artisans', value: Array.isArray(users) ? users.length : 0, icon: <Users size={18} /> },
+           { label: 'Active Hubs', value: Array.isArray(projects) ? projects.length : 0, icon: <Database size={18} /> },
+           { label: 'Grounded Files', value: Array.isArray(projects) ? projects.reduce((acc, p) => acc + (p._count?.documents || 0), 0) : 0, icon: <Activity size={18} /> },
            { label: 'System Integrity', value: '100%', icon: <ShieldCheck size={18} /> }
          ].map((stat, i) => (
            <div key={i} className="saas-card p-8 flex items-center gap-6 bg-saas-surface/20">
@@ -150,7 +150,7 @@ const AdminDashboard = () => {
                </tr>
             </thead>
             <tbody className="divide-y divide-saas-border/30">
-               {activeTab === 'users' ? users.map(u => (
+               {activeTab === 'users' ? (Array.isArray(users) && users.map(u => (
                  <tr key={u.id} className="group hover:bg-saas-surface/20 transition-colors">
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-4">
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
                           </div>
                        </div>
                     </td>
-                    <td className="px-8 py-6 text-xs font-black text-saas-text uppercase tracking-widest">{u._count.projects} Hubs</td>
+                    <td className="px-8 py-6 text-xs font-black text-saas-text uppercase tracking-widest">{u._count?.projects || 0} Hubs</td>
                     <td className="px-8 py-6">
                        <span className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border
                          ${u.role === 'ADMIN' ? 'bg-saas-accent/10 border-saas-accent/20 text-saas-accent' : 'bg-saas-surface border-saas-border text-saas-text-muted'}`}>
@@ -172,11 +172,11 @@ const AdminDashboard = () => {
                     </td>
                     <td className="px-8 py-6 text-[10px] font-black text-saas-text-muted uppercase tracking-[0.2em]">{new Date(u.createdAt).toLocaleDateString()}</td>
                  </tr>
-               )) : projects.map(p => (
+               ))) : (Array.isArray(projects) && projects.map(p => (
                  <tr key={p.id} className="group hover:bg-saas-surface/20 transition-colors">
                     <td className="px-8 py-6 font-bold text-saas-text text-sm">{p.name}</td>
                     <td className="px-8 py-6 text-xs font-black text-saas-text-muted uppercase tracking-widest">{p.user?.email}</td>
-                    <td className="px-8 py-6 text-xs font-medium text-saas-text-muted tracking-widest">{p._count.documents} BLOCKS</td>
+                    <td className="px-8 py-6 text-xs font-medium text-saas-text-muted tracking-widest">{p._count?.documents || 0} BLOCKS</td>
                     <td className="px-8 py-6 text-right">
                        <button 
                         onClick={() => handleDeleteProject(p.id, p.name)}
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
                        </button>
                     </td>
                  </tr>
-               ))}
+               )))}
             </tbody>
          </table>
       </section>

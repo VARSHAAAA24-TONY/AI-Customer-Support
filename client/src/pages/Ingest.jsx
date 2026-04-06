@@ -38,8 +38,14 @@ const Ingest = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setWorkspaces(res.data);
-      if (res.data.length > 0) setSelectedWorkspace(res.data[0]);
+      if (Array.isArray(res.data)) {
+        setWorkspaces(res.data);
+        if (res.data.length > 0) setSelectedWorkspace(res.data[0]);
+      } else {
+        console.error('Unexpected Workspaces Data:', res.data);
+        setWorkspaces([]);
+        toast.error('Portal Error: Could not synchronize workspaces.');
+      }
     } catch (err) {
       console.error(err);
       toast.error('Neural Sync Offline');
@@ -124,14 +130,14 @@ const Ingest = () => {
               </div>
               
               <div className="relative">
-                 <select 
-                    value={selectedWorkspace?.id}
-                    onChange={(e) => setSelectedWorkspace(workspaces.find(w => w.id === e.target.value))}
-                    className="w-full bg-saas-bg border border-saas-border rounded-xl py-4 px-5 text-sm text-saas-text outline-none appearance-none focus:border-saas-accent/50 transition-all cursor-pointer"
-                 >
-                    {workspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
-                    {workspaces.length === 0 && <option>No Workspaces Available</option>}
-                 </select>
+                  <select 
+                     value={selectedWorkspace?.id}
+                     onChange={(e) => setSelectedWorkspace(Array.isArray(workspaces) ? workspaces.find(w => w.id === e.target.value) : null)}
+                     className="w-full bg-saas-bg border border-saas-border rounded-xl py-4 px-5 text-sm text-saas-text outline-none appearance-none focus:border-saas-accent/50 transition-all cursor-pointer"
+                  >
+                     {Array.isArray(workspaces) && workspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                     {(!Array.isArray(workspaces) || workspaces.length === 0) && <option>No Workspaces Available</option>}
+                  </select>
                  <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-saas-text-muted pointer-events-none" />
               </div>
 
@@ -141,10 +147,10 @@ const Ingest = () => {
                     <span className="text-[10px] font-black uppercase tracking-widest">Global Memory Status</span>
                  </div>
                  <div className="mt-4 space-y-3">
-                    <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-saas-text-muted">
-                       <span>Total Blocks</span>
-                       <span>{workspaces.reduce((acc, w) => acc + (w._count?.documents || 0), 0)}</span>
-                    </div>
+                     <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-saas-text-muted">
+                        <span>Total Blocks</span>
+                        <span>{Array.isArray(workspaces) ? workspaces.reduce((acc, w) => acc + (w._count?.documents || 0), 0) : 0}</span>
+                     </div>
                     <div className="w-full h-1 bg-saas-bg rounded-full overflow-hidden">
                        <div className="h-full bg-saas-accent w-2/3" />
                     </div>

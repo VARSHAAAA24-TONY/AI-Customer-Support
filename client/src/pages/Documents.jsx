@@ -33,13 +33,14 @@ const Documents = () => {
       const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Flatten all documents from all projects
-      const allDocs = res.data.flatMap(p => 
-        (p.documents || []).map(d => ({ ...d, projectName: p.name, projectId: p.id }))
-      );
+      // Flatten all documents from all projects with array safety
+      const allDocs = Array.isArray(res.data) ? res.data.flatMap(p => 
+        (Array.isArray(p.documents) ? p.documents : []).map(d => ({ ...d, projectName: p.name, projectId: p.id }))
+      ) : [];
       setDocuments(allDocs);
     } catch (err) {
       console.error(err);
+      setDocuments([]);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,3 @@
-const { pipeline } = require('@xenova/transformers');
 
 let extractor = null;
 
@@ -11,6 +10,7 @@ const getEmbedding = async (text) => {
   try {
     if (!extractor) {
       console.log('[Embeddings] Initializing local model (Xenova/all-MiniLM-L6-v2)...');
+      const { pipeline } = await import('@xenova/transformers');
       extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     }
 
